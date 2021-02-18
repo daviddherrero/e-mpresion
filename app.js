@@ -6,17 +6,15 @@ var bodyParser = require('body-parser');
 
 var app  = express();
 
-//Cargar rutas
-
+//Cargar rutas de las llamadas rest
+var user_routes = require('./routes/user');  //Rutas del controlador de user
 
 app.use(bodyParser.urlencoded({extended:false}));	//Necesario para que bodyparser funcione
 app.use(bodyParser.json()); //Convierte a json lo que nos devuelven las peticiones http
 //Configurar cabeceras http
 
 //Cargar rutas base
-app.get('/pruebas', function(req, res){
-    res.status(200).send({message: 'Bienvenido al curso de victorroblesweb.es'});
-});
+app.use('/api', user_routes);   //Creamos ruta base, para añadir /api al principio de cada llamada a las rutas de user
 
 
 module.exports = app;	//Podemos usar express dentro de otros ficheros que incluyan app

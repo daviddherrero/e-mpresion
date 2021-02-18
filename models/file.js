@@ -6,8 +6,8 @@ var Schema = mongoose.Schema;
 var FileSchema = Schema({
 	file_extension: String,
 	file_name: String,
-	file_id: String,
+    file: String
 	
 });
 
-module.exports = mongoose.model('Order', OrderSchema);
+module.exports = mongoose.model('File', FileSchema);

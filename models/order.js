@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 
 var OrderSchema = Schema({
 	n_order: String,
-	username: String,
+	user_id: String,
 	file_id: String,
 	
 });
