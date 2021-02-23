@@ -12,5 +12,7 @@ var UserController = require('../controllers/user');    //Cargamos en la variabl
 var api = express.Router();    //Nos permite mediante express crear rutas api REST
 
 api.get('/probando-controlador', UserController.pruebas);
+api.post('/register', UserController.saveUser);
+api.post('/login', UserController.loginUser);
 
 module.exports = api;
