@@ -21,5 +21,6 @@ api.post('/register', UserController.saveUser);
 api.post('/login', UserController.loginUser);
 api.put('/update-user/:id', auth.ensuredAuth,  UserController.updateUser);  //Si queremos pedir id en ruta obligatorio -> /:id?
 api.post('/upload-image-user/:id', [auth.ensuredAuth, md_upload],  UserController.uploadImage);
+api.get('/get-image-user/:imageFile',  UserController.getImageFile);
 
 module.exports = api;
