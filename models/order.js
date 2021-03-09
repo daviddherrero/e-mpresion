@@ -4,9 +4,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var OrderSchema = Schema({
-	n_order: String,
-	user_id: String,
-	file_id: String,
+	user_id: String,	//Foreign key que conecta con el user que hizo este pedido
+	file: String	//Vamos a tratar con un unico archivo en un primer lugar
 	
 });
 
