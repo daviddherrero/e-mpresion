@@ -2,6 +2,7 @@
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../models/user');
 var jwt = require('../services/jwt');
+//var Order = require('../models/order');
 //Cargamos los modulos fs y path para poder trabajar con sistemas de ficheros y con los paths
 var fs = require('fs');
 var path = require('path');
@@ -144,8 +145,8 @@ function getImageFile(req, res){
             res.status(200).send({message: 'No existe la imagen pedida'});
         }
     });
-
 }
+
 
 
 module.exports = {
