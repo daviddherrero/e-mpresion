@@ -3,7 +3,8 @@
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../models/user');
 var jwt = require('../services/jwt');
-var Order = require('../models/order')
+var Order = require('../models/order');
+var dateFormat = require('dateformat');
 
 //Cargamos los modulos fs y path para poder trabajar con sistemas de ficheros y con los paths
 var fs = require('fs');
@@ -34,7 +35,10 @@ function generateOrder(req, res){
 
     order.user_id = params.user_id;
     order.file = 'null';
-    order.dateTime = new Date();
+    order.status = 'Pending'
+    //Hacemos uso de la libreria DateFormat de node, para poder modificar la apariencia de la fecha
+    var date = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
+    order.dateTime = date;
 
     order.save((err, orderStored) => {
         if(err){
@@ -49,9 +53,9 @@ function generateOrder(req, res){
     });
 }
 
-function updateOrder(req, res){
+function updateOrder(req, res){ //Deberemos +
     var orderId = req.params.id;
-    var update = req.body;  //Datos a actualizar
+    var update = req.body;  
 
     Order.findByIdAndUpdate(orderId, update, (err, userUpdated) => {
         if(err){
@@ -66,10 +70,33 @@ function updateOrder(req, res){
     });
 }
 
+function getOrders(req, res){
+    var userId = req.params.user_id;
+
+    if(!userId){
+        var encontrado = Order.find({}).sort('dateTime');//Sacar todos los pedidos de la bbdd, nos ayudara para tener una vision general en el MASTER
+    }else{
+        var encontrado = Order.find({user_id: userId}).sort('dateTime');//Sacar los de un usuario concreto, para uqe pueda ver sus pedidos y su estado
+    }
+    //sustitucion de los datos extraidos
+    encontrado.populate({path: 'users'}).exec((err, orders) => {
+        if(err){
+            res.status(500).send({message: 'Error en el getPedidos'});
+        }else{
+            if(!orders){
+                res.status(404).send({message: 'No hay pedidos'}); 
+            }else{
+                res.status(200).send({orders}); 
+            }
+        }
+    });
+}
+
 
 
 module.exports = {
     getOrder,
     generateOrder,
-    updateOrder
+    updateOrder,
+    getOrders
 };
