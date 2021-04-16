@@ -5,6 +5,7 @@ var User = require('../models/user');
 var jwt = require('../services/jwt');
 var Order = require('../models/order');
 var dateFormat = require('dateformat');
+const nodemailer = require("nodemailer");
 
 //Cargamos los modulos fs y path para poder trabajar con sistemas de ficheros y con los paths
 var fs = require('fs');
@@ -38,7 +39,8 @@ function generateOrder(req, res){
     order.status = 'Pending'
     //Hacemos uso de la libreria DateFormat de node, para poder modificar la apariencia de la fecha
     var date = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
-    order.dateTime = date;
+    order.created_at = date;
+    order.completed_at = 'null';
 
     order.save((err, orderStored) => {
         if(err){
@@ -71,7 +73,7 @@ function updateOrder(req, res){ //Deberemos +
 }
 
 function getOrders(req, res){
-    var userId = req.params.user_id;
+    var userId = req.params.user;
 
     if(!userId){
         var encontrado = Order.find({}).sort('dateTime');//Sacar todos los pedidos de la bbdd, nos ayudara para tener una vision general en el MASTER
@@ -94,9 +96,49 @@ function getOrders(req, res){
 
 
 
+async function sendProcessEmail(req, res){
+
+    var name = req.body.username;
+    var from = req.body.from;
+    var message = 'Su pedido se encuentra ahora mismo a la espera de ser procesado por cualquiera de nuestros funcionarios. Cuando este totalmente listo, será informado con otro correo. GRACIAS';
+    var to = req.body.email;
+
+    let transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: "empresion34@gmail.com",
+            pass: "e-mpresion345"
+        } 
+    });
+
+    var mailOptions = {
+        from: from,
+        to: to, 
+        subject: name+' pedido realizado !',
+        text: message
+    }
+
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log("error is "+error);
+            res.status(500).send({message: 'Error en la peticion'});; 
+        } 
+       else {
+           console.log('Email sent: ' + info.response);
+           res.status(200).send({message: 'Email enviado'});
+        }
+       });
+}
+
+
+
+
+
 module.exports = {
     getOrder,
     generateOrder,
     updateOrder,
-    getOrders
+    getOrders,
+    sendProcessEmail
 };

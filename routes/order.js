@@ -15,5 +15,6 @@ api.get('/getOrder/:id', auth.ensuredAuth, OrderController.getOrder);
 api.post('/generateOrder', auth.ensuredAuth, OrderController.generateOrder);
 api.put('/update-order/:id', auth.ensuredAuth,  OrderController.updateOrder);  //Si queremos pedir id en ruta obligatorio -> /:id?
 api.get('/getOrders/:user?', auth.ensuredAuth, OrderController.getOrders);
+api.post('/sendProcessEmail', OrderController.sendProcessEmail);
 
 module.exports = api;
