@@ -4,6 +4,7 @@ var bcrypt = require('bcrypt-nodejs');
 var User = require('../models/user');
 var jwt = require('../services/jwt');
 var Order = require('../models/order');
+
 var dateFormat = require('dateformat');
 const nodemailer = require("nodemailer");
 
@@ -25,8 +26,6 @@ function getOrder(req, res){
             }
         }
     });  //Conseguir el elemento cuyo id sea el buscado en el path order
-
-
 }
 
 function generateOrder(req, res){
@@ -35,12 +34,14 @@ function generateOrder(req, res){
     var params = req.body;  //Parametros que nos llegan en la peticion
 
     order.user_id = params.user_id;
-    order.file = 'null';
-    order.status = 'Pending'
-    //Hacemos uso de la libreria DateFormat de node, para poder modificar la apariencia de la fecha
     var date = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     order.created_at = date;
-    order.completed_at = 'null';
+    order.file = 'null';
+    order.status = 'Pending';
+    order.completed_at = null;
+   
+    //Hacemos uso de la libreria DateFormat de node, para poder modificar la apariencia de la fecha
+    
 
     order.save((err, orderStored) => {
         if(err){
@@ -94,7 +95,6 @@ function getOrders(req, res){
     });
 }
 
-
 async function sendProcessEmail(req, res){
 
     var name = req.body.username;
@@ -117,6 +117,39 @@ async function sendProcessEmail(req, res){
         text: message
     }
 
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log("error is "+error);
+            res.status(500).send({message: 'Error en la peticion'});; 
+        } 
+       else {
+           console.log('Email sent: ' + info.response);
+           res.status(200).send({message: 'Email enviado'});
+        }
+       });
+}
+
+async function sendFinishedEmail(req, res){
+
+    var name = req.body.username;
+    var from = req.body.from;
+    var message = 'Su pedido ha sido completado correctamente, y ya espera a ser recogido por usted. GRACIAS';
+    var to = req.body.email;
+
+    let transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: "empresion34@gmail.com",
+            pass: "e-mpresion345"
+        } 
+    });
+
+    var mailOptions = {
+        from: from,
+        to: to, 
+        subject: name+' Pedido completado !',
+        text: message
+    }
 
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
@@ -130,14 +163,29 @@ async function sendProcessEmail(req, res){
        });
 }
 
+function getCreationDate(req, res){
+    var orderId = req.params.id;
 
-
-
+    Order.findById(orderId).populate({path: 'user'}).exec((err, order) => {
+        if(err){
+            res.status(500).send({message: 'Error en la peticion'});
+        }else{
+            if(!order){
+                res.status(404).send({message: 'No existe el pedido'});
+            }else{
+                
+                res.status(200).send(order.created_at);
+            }
+        }
+    });  
+}
 
 module.exports = {
     getOrder,
     generateOrder,
     updateOrder,
     getOrders,
-    sendProcessEmail
+    sendProcessEmail,
+    sendFinishedEmail,
+    getCreationDate
 };

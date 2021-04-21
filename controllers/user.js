@@ -147,6 +147,23 @@ function getImageFile(req, res){
     });
 }
 
+function getEmail(req, res){
+    var userId = req.params.id;
+
+    User.findById(userId).exec((err, user) => {
+        if(err){
+            res.status(500).send({message: 'Error en la peticion'});
+        }else{
+            if(!user){
+                res.status(404).send({message: 'No existe el pedido'});
+            }else{
+                
+                res.status(200).send(user.email);
+            }
+        }
+    });  
+}
+
 
 
 module.exports = {
@@ -155,5 +172,6 @@ module.exports = {
     loginUser,
     updateUser,
     uploadImage,
-    getImageFile
+    getImageFile,
+    getEmail
 };

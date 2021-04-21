@@ -12,7 +12,17 @@ var order_routes = require('./routes/order');   //Rutas del controlador de order
 
 app.use(bodyParser.urlencoded({extended:false}));	//Necesario para que bodyparser funcione
 app.use(bodyParser.json()); //Convierte a json lo que nos devuelven las peticiones http
+
 //Configurar cabeceras http
+/*
+app.use((req, res, next) => {   //Permisos para acceso a nuestra api mediante cabeceras http
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+
+    next();
+});*/
 
 //Cargar rutas base
 app.use('/api', user_routes);   //Creamos ruta base, para añadir /api al principio de cada llamada a las rutas de user

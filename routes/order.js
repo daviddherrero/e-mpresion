@@ -12,6 +12,7 @@ var multipart = require('connect-multiparty');  //Nos va a permitir trabjar en h
 var md_upload = multipart({ uploadDir: './uploads/order'}); //Los ficheros, se van a subir a ./uploads/order
 
 api.get('/getOrder/:id', auth.ensuredAuth, OrderController.getOrder);
+api.get('/getCreationDate/:id', auth.ensuredAuth, OrderController.getCreationDate);
 api.post('/generateOrder', auth.ensuredAuth, OrderController.generateOrder);
 api.put('/update-order/:id', auth.ensuredAuth,  OrderController.updateOrder);  //Si queremos pedir id en ruta obligatorio -> /:id?
 api.get('/getOrders/:user?', auth.ensuredAuth, OrderController.getOrders);
